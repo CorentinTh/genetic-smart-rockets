@@ -105,6 +105,11 @@ function setupInterfaceManager({ collisionManager }: { collisionManager: Collisi
         collisionManager.setRandomObstacles();
         return;
       }
+
+      if (value === 'concave') {
+        collisionManager.setConcaveObstacles();
+        return;
+      }
     },
   });
 

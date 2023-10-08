@@ -1,5 +1,4 @@
 import { CollisionManager } from '../collisions/collision.types';
-import { config } from '../config';
 import { createDna, crossoverDna, mutateDna } from '../dna/dna';
 import { Target } from '../target/target.types';
 import { addVectors, createVector, limitVector } from '../vectors/vectors.models';
@@ -9,16 +8,16 @@ import { Rocket } from './rockets.types';
 
 export { createRocket, crossoverRockets, drawRocket, mutateRocket, updateRocket };
 
-function drawRocket({ rocket, ctx }: { rocket: Rocket; ctx: CanvasRenderingContext2D }) {
-  const rocketWidth = 10;
-  const rocketHeight = 20;
-  const opacity = 0.5;
+const rocketWidth = 10;
+const rocketHeight = 20;
+const opacity = 0.5;
 
+function drawRocket({ rocket, ctx }: { rocket: Rocket; ctx: CanvasRenderingContext2D }) {
   ctx.save();
   ctx.translate(rocket.position.x, rocket.position.y);
   ctx.rotate(Math.atan2(rocket.velocity.y, rocket.velocity.x) + Math.PI / 2);
-  ctx.fillStyle = config.colors.rocket;
   ctx.globalAlpha = opacity;
+
   ctx.fillRect(-rocketWidth / 2, -rocketHeight / 2, rocketWidth, rocketHeight);
   ctx.restore();
 }

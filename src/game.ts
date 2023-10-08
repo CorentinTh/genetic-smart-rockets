@@ -20,28 +20,6 @@ export type GameState = {
   target: Target;
 };
 
-function renderLoop({ ctx, gameState, collisionManager }: { ctx: CanvasRenderingContext2D; gameState: GameState; collisionManager: CollisionManager }) {
-  requestAnimationFrame(() => renderLoop({ ctx, gameState, collisionManager }));
-
-  const { canvas } = ctx;
-  const { width, height } = canvas;
-
-  ctx.fillStyle = config.colors.background;
-  ctx.fillRect(0, 0, width, height);
-
-  collisionManager.renderObstacles({ ctx });
-
-  const { target } = gameState;
-
-  renderTarget({ target, ctx });
-
-  const {
-    generation: { rockets },
-  } = gameState;
-
-  rockets.forEach((rocket) => drawRocket({ rocket, ctx }));
-}
-
 function updateLoop({
   gameState,
   collisionManager,
@@ -74,6 +52,9 @@ function setupGameEngine({ ctx, fps = 60 }: { ctx: CanvasRenderingContext2D; fps
   const { canvas } = ctx;
   const { width, height } = canvas;
 
+  const collisionManager = createCollisionManager({ canvas });
+  const interfaceManager = setupInterfaceManager({ collisionManager });
+
   const gameState: GameState = {
     generation: createGeneration({ initialPosition: createVector({ x: width / 2, y: height - 50 }) }),
     target: {
@@ -82,14 +63,32 @@ function setupGameEngine({ ctx, fps = 60 }: { ctx: CanvasRenderingContext2D; fps
     },
   };
 
-  const collisionManager = createCollisionManager({ canvas });
+  function renderLoop() {
+    const { canvas } = ctx;
+    const { width, height } = canvas;
+    const { target, generation } = gameState;
+    const { rockets } = generation;
 
-  const interfaceManager = setupInterfaceManager({ collisionManager });
+    ctx.fillStyle = config.colors.background;
+    ctx.fillRect(0, 0, width, height);
+
+    collisionManager.renderObstacles({ ctx });
+
+    renderTarget({ target, ctx });
+
+    ctx.fillStyle = config.colors.rocket;
+    // rockets.forEach((rocket) => drawRocket({ rocket, ctx }));
+    for (const rocket of rockets) {
+      drawRocket({ rocket, ctx });
+    }
+
+    requestAnimationFrame(renderLoop);
+  }
 
   return {
     start() {
-      renderLoop({ ctx, gameState, collisionManager });
       setInterval(() => updateLoop({ gameState, collisionManager, canvas, interfaceManager, width, height }), 1000 / fps);
+      requestAnimationFrame(renderLoop);
     },
   };
 }

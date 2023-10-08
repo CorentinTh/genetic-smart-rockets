@@ -30,6 +30,8 @@ function createMatingPool({ rockets, target, interfaceManager }: { rockets: Rock
     return [...pool, ...Array.from({ length: fitness }, () => rocket)];
   }, [] as Rocket[]);
 
+  console.log(matingPool.length);
+
   return matingPool;
 }
 
